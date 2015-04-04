@@ -1,72 +1,90 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from copy import deepcopy
 
 plt.ion()
 
 
-def pattern(n_pattern):
+def pattern(n_pattern, rule):
     """ Function to identify neighbour pattern
 
+    ---
+    n_pattern : the set of cells to calculate the new state from.
+    rule : the rule that is used to update from
     """
+
     if n_pattern[0] == 1:
         if n_pattern[1] == 1:
             if n_pattern[2] == 1:
                 # print "111"
-                new_state = 0
+                new_state = rule[0]
             if n_pattern[2] == 0:
                 # print "110"
-                new_state = 1
+                new_state = rule[1]
         if n_pattern[1] == 0:
             if n_pattern[2] == 1:
                 # print "101"
-                new_state = 1
+                new_state = rule[2]
             if n_pattern[2] == 0:
                 # print "100"
-                new_state = 0
+                new_state = rule[3]
     elif n_pattern[0] == 0:
         if n_pattern[1] == 1:
             if n_pattern[2] == 1:
                 # print "011"
-                new_state = 1
+                new_state = rule[4]
             if n_pattern[2] == 0:
                 # print "010"
-                new_state = 1
+                new_state = rule[5]
         if n_pattern[1] == 0:
             if n_pattern[2] == 1:
                 # print "001"
-                new_state = 1
+                new_state = rule[6]
             if n_pattern[2] == 0:
                 # print "000"
-                new_state = 0
+                new_state = rule[7]
 
     return new_state
 
 
-foo = np.random.randint(2, size=(100))
-bar = foo.copy()
+def update_CA(CA, n_update=100, rule=[0, 1, 1, 0, 1, 1, 1, 0]):
+    """ Function to update a CA
 
-result = np.empty([100, 100])
-n_pattern = np.empty([3])
+    ---
+    CA : 1d CA
+    n_update : the number of updates that will be ran
+    """
 
-for j in range(100):
-    tmp = foo.copy()
-    for i in range(len(tmp)):
+    n_pattern = np.empty([3])
+    result = np.empty([n_update, len(CA)])
+    state = deepcopy(CA)
+    state_updated = np.empty_like(CA)
 
-        if i + 1 < len(tmp):
-            n_pattern[0] = tmp[i - 1]
-            n_pattern[1] = tmp[i]
-            n_pattern[2] = tmp[i + 1]
-        elif i + 1 == len(tmp):
-            n_pattern[0] = tmp[i - 1]
-            n_pattern[1] = tmp[i]
-            n_pattern[2] = tmp[0]
+    for j in range(n_update):
+        for i in range(len(state)):
+            if i + 1 < len(state):
+                n_pattern[0] = state[i - 1]
+                n_pattern[1] = state[i]
+                n_pattern[2] = state[i + 1]
+            else:
+                n_pattern[0] = state[i - 1]
+                n_pattern[1] = state[i]
+                n_pattern[2] = state[0]
 
-        print n_pattern
-        new_state = pattern(n_pattern)
-        bar[i] = new_state
+            # print n_pattern
+            new_state = pattern(n_pattern, rule)
+            state_updated[i] = new_state
 
-    result[j, :] = bar.reshape(-1)
-    tmp = bar.copy()
+        result[j, :] = state_updated.reshape(-1)
+        state = deepcopy(state_updated)
 
+    return result
 
-plt.imshow(result, interpolation="None")
+rules = {"30": [0, 0, 0, 1, 1, 1, 1, 0],
+         "90": [0, 1, 0, 1, 1, 0, 1, 0],
+         "110": [0, 1, 1, 0, 1, 1, 1, 0]}
+
+foo = np.random.randint(2, size=(200))
+
+result = update_CA(foo, 500,  rule=rules["30"])
+plt.imshow(result, interpolation="None", cmap="binary")
