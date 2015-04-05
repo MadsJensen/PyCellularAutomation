@@ -8,7 +8,10 @@ plt.ion()
 
 
 class CA(object):
-    """A 1 dimensional celluar automatica
+    """A 1 dimensional celluar automatica.
+
+    Initate with a binary numpy array of N-lenght (orig_conf).
+    Use "update" to evole the CA using a specific rule.
 
     """
 
@@ -53,6 +56,7 @@ class CA(object):
 
     def plot(self, interpolation="None", cmap="binary"):
         """Plot updated data
+        Use matplotlib, params are from matplotlib.
 
         Parameters
         ----------
@@ -68,7 +72,7 @@ class CA(object):
 
 
 def pattern(n_pattern, rule):
-    """ Function to identify neighbour pattern
+    """ Function to identify pattern based on neighbours.
 
     Parameters
     ----------
