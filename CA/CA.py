@@ -4,9 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-plt.ion()
-
-
 class CA(object):
     """A 1 dimensional celluar automatica.
 
